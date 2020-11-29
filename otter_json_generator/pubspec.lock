@@ -297,7 +297,7 @@ packages:
       path: "../otter_json"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.0.1"
   package_config:
     dependency: transitive
     description:
