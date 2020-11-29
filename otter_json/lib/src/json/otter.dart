@@ -2,6 +2,7 @@ import 'package:otter_json/src/api/json_module.dart';
 import 'package:otter_json/src/api/json_serializer.dart';
 import 'package:otter_json/src/json/otter_internal.dart';
 
+// TODO @Kam add flutter classes
 class Otter {
   Otter._();
 

@@ -10,7 +10,37 @@ class JsonModuleBuilder implements Builder {
     r'$lib$': ['generated/generated_json_module.dart']
   };
 
-  String jsonSerializer(ClassElement clazz) {
+  String enumSerializer(ClassElement clazz) {
+    var enums = StringBuffer();
+    enums.writeln('{');
+    clazz.fields.where((field) => field.isEnumConstant).forEach((field) {
+      enums.writeln("    '${field.name}': ${clazz.name}.${field.name},");
+    });
+    enums.write('  };');
+
+    return '''
+
+class _${clazz.name}JsonSerializer implements JsonSerializer<${clazz.name}, String>{
+  final Map<String, ${clazz.name}> enums = $enums
+  
+  @override
+  ${clazz.name} decode(String output) {
+    var result = enums[output];
+    if (result == null) {
+      throw ArgumentError('enum not found, output=\$output');
+    }
+    return result;
+  }
+
+  @override
+  String encode(${clazz.name} input) {
+    return describeEnum(input);
+  }
+}
+''';
+  }
+
+  String objectSerializer(ClassElement clazz) {
     var constructor = StringBuffer();
     var mapper = StringBuffer();
 
@@ -37,7 +67,7 @@ class JsonModuleBuilder implements Builder {
     mapper.write('    };');
 
     return '''
-    
+
 class _${clazz.name}JsonSerializer implements JsonSerializer<${clazz.name}, Map<String, dynamic>>{
   @override
   ${clazz.name} decode(Map<String, dynamic> output) {
@@ -49,7 +79,6 @@ class _${clazz.name}JsonSerializer implements JsonSerializer<${clazz.name}, Map<
     $mapper
   }
 }
-
 ''';
   }
 
@@ -57,9 +86,11 @@ class _${clazz.name}JsonSerializer implements JsonSerializer<${clazz.name}, Map<
   Future<void> build(BuildStep buildStep) async {
     final assets = buildStep.findAssets(Glob('**/*.dart'));
 
-    var serializers = [];
-    var dependencies = [];
-    var module = [];
+    var serializers = Set();
+    var enums = Set();
+    var dependencies = Set();
+    var module = Set();
+
     await for (final asset in assets) {
       final library = LibraryReader(await buildStep.resolver.libraryFor(asset));
 
@@ -67,6 +98,16 @@ class _${clazz.name}JsonSerializer implements JsonSerializer<${clazz.name}, Map<
       for (var annotatedElement in library.annotatedWith(typeChecker)) {
         if (annotatedElement.element is ClassElement) {
           ClassElement classElement = annotatedElement.element;
+
+          classElement.fields.forEach((element) {
+            ClassElement enumElement = element.type.element;
+            if (enumElement.isEnum && enums.add(enumElement.name)) {
+              serializers.add(enumSerializer(enumElement));
+              dependencies.add("import '${enumElement.library.identifier}';");
+              module.add("      '${enumElement.name}': _${enumElement.name}JsonSerializer(),");
+            }
+          });
+
           var anyFinals = classElement.fields.any((e) => e.isFinal);
           var anyPrivates = classElement.fields.any((e) => e.isPrivate);
 
@@ -78,23 +119,23 @@ class _${clazz.name}JsonSerializer implements JsonSerializer<${clazz.name}, Map<
             throw ArgumentError('[ERROR] all fields should not be private, class=${classElement.name}');
           }
 
-          dependencies.add("import '${annotatedElement.element.library.identifier}';");
-          serializers.add(jsonSerializer(annotatedElement.element));
-          module.add("'${annotatedElement.element.name}': _${annotatedElement.element.name}JsonSerializer(),");
+          serializers.add(objectSerializer(classElement));
+          dependencies.add("import '${classElement.library.identifier}';");
+          module.add("      '${classElement.name}': _${classElement.name}JsonSerializer(),");
         }
       }
-    }
 
-    var code = '''
+      var code = '''
 
 import 'package:otter_json/otter_json.dart';
+import 'package:flutter/foundation.dart';
 ${dependencies.join('\n')}
 
 class GeneratedJsonModule implements JsonModule {
   @override
   Map<String, JsonSerializer> serializers() {
     return {
-      ${module.join('\n')}
+${module.join('\n')}
     };
   }
 }
@@ -103,6 +144,7 @@ ${serializers.join('\n')}
 
 ''';
 
-    await buildStep.writeAsString(AssetId(buildStep.inputId.package, 'lib/generated/generated_json_module.dart'), code);
+      await buildStep.writeAsString(AssetId(buildStep.inputId.package, 'lib/generated/generated_json_module.dart'), code);
+    }
   }
 }
