@@ -1,5 +1,6 @@
 import 'package:otter_json/src/api/json_module.dart';
 import 'package:otter_json/src/api/json_serializer.dart';
+import 'package:otter_json/src/json/flutter_serializer.dart';
 import 'package:otter_json/src/json/primitive_serializers.dart';
 
 /// this is for generated file to use only!
@@ -12,6 +13,9 @@ class OtterInternal {
     'double': DoubleJsonSerializer(),
     'bool': BoolJsonSerializer(),
     'num': NumJsonSerializer(),
+    'Color': ColorJsonSerializer(),
+    'DateTime': DateTimeJsonSerializer(),
+    'Duration': DurationJsonSerializer(),
   };
 
   static void module(JsonModule module) {
