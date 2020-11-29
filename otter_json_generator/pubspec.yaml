@@ -1,6 +1,6 @@
 name: otter_json_generator
 description: JSON serialization with code generation. Separate generated code from source and keep everything clean.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/hokamc/otter_json
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  otter_json: ^1.0.1
+  otter_json:
 
   build: ^1.5.1
   build_runner: ^1.10.6

@@ -12,7 +12,8 @@ void main() {
     ..firstName = 'ten'
     ..age = 10
     ..balance = 100
-    ..isMale = true
+    ..isOld = true
+    ..gender = Gender.Male
     ..weight = 80
     ..cards = {'1': 1, '2': 2}
     ..color = Colors.red

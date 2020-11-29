@@ -7,10 +7,13 @@ class Person {
   String firstName;
   String lastName;
   int age;
-  bool isMale;
+  bool isOld;
+  Gender gender;
   num balance;
   double weight;
   List<Person> friends;
   Map<String, int> cards;
   Color color;
 }
+
+enum Gender { Male, Female }

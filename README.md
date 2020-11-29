@@ -17,12 +17,12 @@ JSON serialization with code generation.
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
-- [Why use it?](#why-use-it?)
-- [How to?](#how-to?)
+- [Why use it](#why-use-it)
+- [How to](#how-to)
 - [Link](#link)
 - [Authors](#authors)
 
-## Why use it?
+## Why use it
 
 Do you suffer from json_serializable? All generated code and 'part' make your source code messy. With Otter JSON, keep everything simple and clean.
 
@@ -35,7 +35,7 @@ Do you suffer from json_serializable? All generated code and 'part' make your so
 - Support List<T>, Set<T>, Map<String, T>
 - Support nested object
 
-## How to?
+## How to
 
 - dependencies
 ```yaml
