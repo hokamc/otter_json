@@ -1,14 +1,27 @@
-# otter_json
+<p align="center">
+<img src="https://www.flaticon.com/svg/static/icons/svg/1752/1752608.svg"  width="200" alt="Otter JSON"></a>
+</p>
+<h1 align="center">Otter JSON</h1>
 
-A new Flutter package project.
+<div align="center">
 
-## Getting Started
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)]()
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+</div>
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+<p align="center"> 
+JSON serialization with code generation.
+<br></p>
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Link](#link)
+- [Authors](#authors)
+
+## Link
+
+## Authors
+
+- [@hokamc](https://github.com/hokamc)
