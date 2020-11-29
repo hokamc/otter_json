@@ -1,0 +1,7 @@
+builders:
+  json_module_builder:
+    import: 'package:otter_json_generator/otter_json_generator.dart'
+    builder_factories: [ 'jsonModuleBuilder' ]
+    build_extensions: { r'$lib$': [ 'generated/generated_json_module.dart' ] }
+    auto_apply: root_package
+    build_to: source

@@ -1,0 +1,3 @@
+class JSON {
+  const JSON();
+}
