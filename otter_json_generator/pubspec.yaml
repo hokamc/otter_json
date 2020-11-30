@@ -1,6 +1,6 @@
 name: otter_json_generator
 description: JSON serialization with code generation. Separate generated code from source and keep everything clean.
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/hokamc/otter_json
 
 environment:

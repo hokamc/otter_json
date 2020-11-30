@@ -8,3 +8,6 @@
 
 ### 1.0.2
 - auto latest version
+
+### 1.0.3
+- fix flutter dependencies
