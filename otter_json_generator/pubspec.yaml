@@ -5,21 +5,13 @@ homepage: https://github.com/hokamc/otter_json
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0 <2.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  otter_json:
-
-  build: ^1.5.1
-  build_runner: ^1.10.6
-  analyzer: ^0.40.6
-  source_gen: ^0.9.8
+  otter_json: ^1.0.3
   glob: ^1.2.0
+  analyzer: ^0.40.6
+  build: ^1.5.1
+  source_gen: ^0.9.8
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-flutter:
+  build_runner: ^1.10.6

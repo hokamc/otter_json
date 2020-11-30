@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
-import 'package:otter_json/otter_json.dart';
+import 'package:otter_json/src/api/json.dart';
 import 'package:source_gen/source_gen.dart';
 
 class JsonModuleBuilder implements Builder {
@@ -22,7 +22,7 @@ class JsonModuleBuilder implements Builder {
 
 class _${clazz.name}JsonSerializer implements JsonSerializer<${clazz.name}, String>{
   final Map<String, ${clazz.name}> enums = $enums
-  
+
   @override
   ${clazz.name} decode(String output) {
     var result = enums[output];

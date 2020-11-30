@@ -23,13 +23,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   otter_json:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  otter_json_generator: ^1.0.1
+  otter_json_generator:
   build_runner:
 
 # For information on the generic Dart part of this file, see the

@@ -19,6 +19,7 @@ JSON serialization with code generation.
 - [Table of Contents](#table-of-contents)
 - [Why use it](#why-use-it)
 - [How to](#how-to)
+- [Todo](#todo)
 - [Link](#link)
 - [Authors](#authors)
 
@@ -88,6 +89,9 @@ class ColorSerializer implements JsonSerializer<Color, int> {
 
 Otter.serializer(ColorSerializer());
 ```
+
+## Todo
+-[ ] test 
 
 ## Link
 
