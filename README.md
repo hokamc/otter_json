@@ -91,7 +91,6 @@ Otter.serializer(ColorSerializer());
 ```
 
 ## Todo
--[ ] test 
 
 ## Link
 
