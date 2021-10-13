@@ -11,3 +11,6 @@
 
 ### 1.0.3
 - fix flutter dependencies
+
+### 2.0.0
+- breaking change
