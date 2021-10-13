@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://www.flaticon.com/svg/static/icons/svg/1752/1752608.svg"  width="200" alt="Otter JSON"></a>
+<img src="../icon.png"  width="200" alt="Otter JSON">
 </p>
 <h1 align="center">Otter JSON</h1>
 
