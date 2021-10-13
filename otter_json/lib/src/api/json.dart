@@ -1,3 +1,0 @@
-class JSON {
-  const JSON();
-}

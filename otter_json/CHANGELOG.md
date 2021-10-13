@@ -18,3 +18,7 @@
 ### 1.0.4
 
 - add toMap, fromMap
+
+### 2.0.0
+
+- breaking change
