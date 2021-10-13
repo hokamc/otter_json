@@ -7,9 +7,8 @@ environment:
   sdk: '>=2.14.0 <3.0.0'
 
 dependencies:
-  otter_json:
-    path: ../otter_json
-  glob:
+  otter_json: ^2.0.0
+  glob: ^2.0.2
   analyzer: ^2.0.0
   build: ^2.0.0
   meta: ^1.3.0
