@@ -16,7 +16,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  otter_json_generator: ^2.0.0
+  otter_json_generator:
+    path: ../
   build_runner:
 
 # For information on the generic Dart part of this file, see the
