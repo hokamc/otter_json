@@ -7,10 +7,17 @@
 - add enum
 
 ### 1.0.2
+
 - auto latest version
 
 ### 1.0.3
+
 - fix flutter dependencies
 
 ### 2.0.0
+
 - breaking change
+
+### 2.0.1
+
+- validate custom serializers

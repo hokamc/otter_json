@@ -106,7 +106,7 @@ Modules generateModules(Set<ClassElement> userJsonSerializers, List<GeneratedJso
   Set<String> modules = {};
   for (final userJsonSerializer in userJsonSerializers) {
     dependencies.add("import '${userJsonSerializer.enclosingElement.source.uri.toString()}';");
-    modules.add("      '${userJsonSerializer.getMethod('encode')!.returnType.toString()}': ${userJsonSerializer.name}(),");
+    modules.add("      '${userJsonSerializer.getMethod('decode')!.returnType.toString()}': ${userJsonSerializer.name}(),");
   }
   for (var serializerInfo in serializerInfos) {
     dependencies.add("import '${serializerInfo.uri}';");
