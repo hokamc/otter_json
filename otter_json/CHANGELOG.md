@@ -27,3 +27,7 @@
 
 - allow nullable fields
 - allow custom field name
+
+### 2.0.2
+
+- fix fromMap

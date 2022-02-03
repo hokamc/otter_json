@@ -12,7 +12,7 @@ class Otter {
   }
 
   static T fromMap<T extends Json>(Map<String, dynamic> source) {
-    return OtterInternal.decode(source);
+    return OtterInternal.decode(source)!;
   }
 
   static String toJson<T extends Json>(T object) {
