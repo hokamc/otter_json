@@ -103,3 +103,4 @@ class ExampleEnumJsonSerializer implements JsonSerializer<ExampleEnum, String> {
     return _encoder[input]!;
   }
 }
+

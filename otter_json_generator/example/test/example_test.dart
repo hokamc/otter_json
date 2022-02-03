@@ -7,7 +7,7 @@ import 'package:otter_json/otter_json.dart';
 void main() {
   Otter.importGeneratedModule(OtterGeneratedJsonModule());
   group('test generated serializers', () {
-    test('toJson and fromMap', () {
+    test('toJson and toMap', () {
       AnotherExample example2 = AnotherExample(name: 'name');
       Example example = Example(
         name: 'name',
@@ -37,6 +37,32 @@ void main() {
         'nullInt': null,
         "eenum": 'A1'
       });
+    });
+
+    test('fromJson', () {
+      expect(
+          Otter.toJson(Otter.fromJson<Example>(
+              '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1"}')),
+          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1"}');
+    });
+
+    test('fromMap', () {
+      expect(
+          Otter.toJson(Otter.fromMap<Example>({
+            'name2': 'name',
+            'age': 1,
+            'money': 99.0,
+            'list': [1, 2],
+            'map': {'abc': 10},
+            'color': 4294967295,
+            'example2': {'name': 'name'},
+            'example2s': [
+              {'name': 'name'}
+            ],
+            'nullInt': null,
+            "eenum": 'A1'
+          })),
+          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1"}');
     });
 
     test('null for non-nullable field', () {
