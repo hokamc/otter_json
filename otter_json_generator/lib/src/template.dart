@@ -35,3 +35,34 @@ class ${name}JsonSerializer implements JsonSerializer<$name, Map<String, dynamic
 
 ''';
 }
+
+String enumJsonSerializerTemplate(String name, String encoder, String decoder) {
+  return '''
+
+class ${name}JsonSerializer implements JsonSerializer<$name, String> {
+  final Map<$name, String> _encoder = {
+$encoder};
+  
+  final Map<String, $name> _decoder = {
+$decoder};
+ 
+
+  @override
+  ${name} decode(String output) {
+    if (!_decoder.containsKey(output)) {
+      throw ArgumentError("enum not found, enum=\$output, class=${name}JsonSerializer");
+    }
+    return _decoder[output]!;
+  }
+
+  @override
+  String encode(${name} input) {
+    if (!_encoder.containsKey(input)) {
+      throw ArgumentError("enum not found, enum=\input, class=${name}JsonSerializer");
+    }
+    return _encoder[input]!;
+  }
+}
+
+''';
+}

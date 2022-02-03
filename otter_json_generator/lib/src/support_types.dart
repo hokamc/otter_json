@@ -7,6 +7,9 @@ Set<String> getSupportedTypes(ClassExtraction classExtraction) {
   for (final userJsonSerializer in classExtraction.userJsonSerializers) {
     supportedTypes.add(userJsonSerializer.getMethod('decode')!.returnType.toString());
   }
+  for (final enumSerializer in classExtraction.enumSerializers) {
+    supportedTypes.add(enumSerializer.name);
+  }
   _validateCustomSerializers(classExtraction.userJsonSerializers, supportedTypes);
   for (final generatedJsonSerializer in classExtraction.generatedJsonSerializers) {
     supportedTypes.add(generatedJsonSerializer.name);

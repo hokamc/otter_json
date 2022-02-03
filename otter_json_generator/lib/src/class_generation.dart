@@ -1,7 +1,10 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:otter_json/otter_json.dart';
 import 'package:otter_json_generator/src/template.dart';
 import 'package:otter_json_generator/src/util.dart';
+import 'package:source_gen/source_gen.dart';
 
 class GeneratedJsonSerializerInfo {
   final String className;
@@ -18,14 +21,11 @@ class GeneratedJsonSerializerInfo {
 
 class GeneratedJsonSerializerFieldInfo {
   final FieldType type;
-  final String name;
+  final bool isNullable;
+  final String inputName;
+  final String outputName;
 
-  GeneratedJsonSerializerFieldInfo(this.type, this.name);
-
-  @override
-  String toString() {
-    return 'type: $type\nname: $name';
-  }
+  GeneratedJsonSerializerFieldInfo(this.type, this.isNullable, this.inputName, this.outputName);
 }
 
 class Modules {
@@ -35,7 +35,7 @@ class Modules {
   Modules(this.dependencies, this.modules);
 }
 
-enum FieldType { list, map, field }
+enum FieldType { list, map, field, enumT }
 
 List<GeneratedJsonSerializerInfo> generateJsonSerializerFieldInfo(Set<String> supportedTypes, Set<ClassElement> generatedJsonSerializers) {
   List<GeneratedJsonSerializerInfo> infos = [];
@@ -46,6 +46,7 @@ List<GeneratedJsonSerializerInfo> generateJsonSerializerFieldInfo(Set<String> su
 
     GeneratedJsonSerializerInfo info =
         GeneratedJsonSerializerInfo(generatedJsonSerializer.displayName, [], generatedJsonSerializer.enclosingElement.source.uri.toString());
+    final jsonFieldChecker = TypeChecker.fromRuntime(JsonField);
 
     for (final field in generatedJsonSerializer.fields) {
       if (field.type.isDartCoreList) {
@@ -63,7 +64,36 @@ List<GeneratedJsonSerializerInfo> generateJsonSerializerFieldInfo(Set<String> su
         throw ArgumentError.value(field.name, 'type is not included in that possible types');
       }
 
-      info.fields.add(GeneratedJsonSerializerFieldInfo(_fieldType(field.type), field.name));
+      String outputKey = field.name;
+      if (jsonFieldChecker.hasAnnotationOf(field)) {
+        outputKey = jsonFieldChecker.firstAnnotationOf(field)!.getField("name")!.toStringValue()!;
+      }
+
+      bool isNullable = field.type.nullabilitySuffix == NullabilitySuffix.question;
+      info.fields.add(GeneratedJsonSerializerFieldInfo(_fieldType(field.type), isNullable, field.name, outputKey));
+    }
+
+    infos.add(info);
+  }
+  return infos;
+}
+
+List<GeneratedJsonSerializerInfo> generateEnumSerializerFieldInfo(Set<ClassElement> enumJsonSerializers) {
+  List<GeneratedJsonSerializerInfo> infos = [];
+
+  for (final enumSerializer in enumJsonSerializers) {
+    GeneratedJsonSerializerInfo info =
+        GeneratedJsonSerializerInfo(enumSerializer.displayName, [], enumSerializer.enclosingElement.source.uri.toString());
+    final jsonFieldChecker = TypeChecker.fromRuntime(JsonField);
+
+    for (final field in enumSerializer.fields) {
+      if (field.isEnumConstant) {
+        String outputKey = field.name;
+        if (jsonFieldChecker.hasAnnotationOf(field)) {
+          outputKey = jsonFieldChecker.firstAnnotationOf(field)!.getField("name")!.toStringValue()!;
+        }
+        info.fields.add(GeneratedJsonSerializerFieldInfo(FieldType.enumT, false, field.name, outputKey));
+      }
     }
 
     infos.add(info);
@@ -81,24 +111,44 @@ String generateSerializer(GeneratedJsonSerializerInfo info) {
   info.fields.forEach((field) {
     switch (field.type) {
       case FieldType.list:
-        decode.writeln("      ${field.name}: OtterInternal.decodeList(output['${field.name}']),");
-        encode.writeln("      '${field.name}': OtterInternal.encodeList(input.${field.name}),");
+        decode.write("      ${field.inputName}: OtterInternal.decodeList(output['${field.outputName}'])");
+        encode.write("      '${field.outputName}': OtterInternal.encodeList(input.${field.inputName})");
         break;
       case FieldType.map:
-        decode.writeln("      ${field.name}: OtterInternal.decodeMap(output['${field.name}']),");
-        encode.writeln("      '${field.name}': OtterInternal.encodeMap(input.${field.name}),");
+        decode.write("      ${field.inputName}: OtterInternal.decodeMap(output['${field.outputName}'])");
+        encode.write("      '${field.outputName}': OtterInternal.encodeMap(input.${field.inputName})");
         break;
       case FieldType.field:
-        decode.writeln("      ${field.name}: OtterInternal.decode(output['${field.name}']),");
-        encode.writeln("      '${field.name}': OtterInternal.encode(input.${field.name}),");
+        decode.write("      ${field.inputName}: OtterInternal.decode(output['${field.outputName}'])");
+        encode.write("      '${field.outputName}': OtterInternal.encode(input.${field.inputName})");
+        if (!field.isNullable) {
+          decode.write('!');
+          encode.write('!');
+        }
+        break;
+      case FieldType.enumT:
         break;
     }
+    decode.write(',\n');
+    encode.write(',\n');
   });
 
   decode.write('    );');
   encode.write('    };');
 
   return jsonSerializerTemplate(info.className, encode.toString(), decode.toString());
+}
+
+String generateEnumSerializer(GeneratedJsonSerializerInfo info) {
+  final decode = StringBuffer();
+  var encode = StringBuffer();
+
+  info.fields.forEach((field) {
+    encode.writeln("      ${info.className}.${field.inputName}: '${field.outputName}',");
+    decode.writeln("      '${field.outputName}': ${info.className}.${field.inputName},");
+  });
+
+  return enumJsonSerializerTemplate(info.className, encode.toString(), decode.toString());
 }
 
 Modules generateModules(Set<ClassElement> userJsonSerializers, List<GeneratedJsonSerializerInfo> serializerInfos) {
@@ -108,7 +158,7 @@ Modules generateModules(Set<ClassElement> userJsonSerializers, List<GeneratedJso
     dependencies.add("import '${userJsonSerializer.enclosingElement.source.uri.toString()}';");
     modules.add("      '${userJsonSerializer.getMethod('decode')!.returnType.toString()}': ${userJsonSerializer.name}(),");
   }
-  for (var serializerInfo in serializerInfos) {
+  for (final serializerInfo in serializerInfos) {
     dependencies.add("import '${serializerInfo.uri}';");
     modules.add("      '${serializerInfo.className}': ${serializerInfo.className}JsonSerializer(),");
   }

@@ -24,9 +24,12 @@ class JsonModuleBuilder implements Builder {
   Future<void> build(BuildStep buildStep) async {
     ClassExtraction classExtraction = await extractClasses(buildStep);
     final Set<String> supportedTypes = getSupportedTypes(classExtraction);
-    List<GeneratedJsonSerializerInfo> serializerInfos = generateJsonSerializerFieldInfo(supportedTypes, classExtraction.generatedJsonSerializers);
-    List<String> generatedSerializers = serializerInfos.map((info) => generateSerializer(info)).toList();
-    Modules modules = generateModules(classExtraction.userJsonSerializers, serializerInfos);
+    List<GeneratedJsonSerializerInfo> generatedSerializerInfos =
+        generateJsonSerializerFieldInfo(supportedTypes, classExtraction.generatedJsonSerializers);
+    List<GeneratedJsonSerializerInfo> enumSerializerInfos = generateEnumSerializerFieldInfo(classExtraction.enumSerializers);
+    List<String> generatedSerializers = generatedSerializerInfos.map((info) => generateSerializer(info)).toList();
+    generatedSerializers.addAll(enumSerializerInfos.map((info) => generateEnumSerializer(info)));
+    Modules modules = generateModules(classExtraction.userJsonSerializers, [...generatedSerializerInfos, ...enumSerializerInfos]);
     String generatedJsonModule = generatedModuleTemplate(modules.dependencies, modules.modules);
     await buildStep.writeAsString(
         AssetId(buildStep.inputId.package, 'lib/json_module.gen.dart'), generatedJsonModule + generatedSerializers.join('\n'));

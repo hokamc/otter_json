@@ -7,13 +7,9 @@ import 'package:source_gen/source_gen.dart';
 class ClassExtraction {
   final Set<ClassElement> userJsonSerializers;
   final Set<ClassElement> generatedJsonSerializers;
+  final Set<ClassElement> enumSerializers;
 
-  ClassExtraction(this.userJsonSerializers, this.generatedJsonSerializers);
-
-  @override
-  String toString() {
-    return 'userJsonSerializers: $userJsonSerializers\ngeneratedJsonSerializers: $generatedJsonSerializers';
-  }
+  ClassExtraction(this.userJsonSerializers, this.generatedJsonSerializers, this.enumSerializers);
 }
 
 Future<ClassExtraction> extractClasses(BuildStep buildStep) async {
@@ -23,7 +19,8 @@ Future<ClassExtraction> extractClasses(BuildStep buildStep) async {
   final importJsonModuleChecker = TypeChecker.fromRuntime(ImportJsonModule);
   final jsonModuleChecker = TypeChecker.fromRuntime(JsonModule);
   final userJsonSerializers = Set<ClassElement>();
-  final generatedJsonSerializer = Set<ClassElement>();
+  final preGenerateJsonSerializers = Set<ClassElement>();
+  final enumSerializer = Set<ClassElement>();
 
   await for (final asset in assets) {
     final library = LibraryReader(await buildStep.resolver.libraryFor(asset));
@@ -36,10 +33,18 @@ Future<ClassExtraction> extractClasses(BuildStep buildStep) async {
           }
         }
       } else if (jsonChecker.isAssignableFrom(cls)) {
-        generatedJsonSerializer.add(cls);
+        preGenerateJsonSerializers.add(cls);
+
+        for (var field in cls.fields) {
+          ClassElement fieldClass = field.type.element as ClassElement;
+
+          if (fieldClass.isEnum) {
+            enumSerializer.add(fieldClass);
+          }
+        }
       }
     }
   }
 
-  return ClassExtraction(userJsonSerializers, generatedJsonSerializer);
+  return ClassExtraction(userJsonSerializers, preGenerateJsonSerializers, enumSerializer);
 }
