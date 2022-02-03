@@ -22,3 +22,8 @@
 ### 2.0.0
 
 - breaking change
+
+### 2.0.1
+
+- allow nullable fields
+- allow custom field name
