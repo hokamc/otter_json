@@ -17,6 +17,7 @@ class OtterGeneratedJsonModule implements GeneratedJsonModule {
       'Color': ExampleSerializer(),
       'Example': ExampleJsonSerializer(),
       'AnotherExample': AnotherExampleJsonSerializer(),
+      'ExampleEnum': ExampleEnumJsonSerializer(),
     };
   }
 }
@@ -25,28 +26,32 @@ class ExampleJsonSerializer implements JsonSerializer<Example, Map<String, dynam
   @override
   Example decode(Map<String, dynamic> output) {
     return Example(
-      name: OtterInternal.decode(output['name']),
-      age: OtterInternal.decode(output['age']),
-      money: OtterInternal.decode(output['money']),
+      name: OtterInternal.decode(output['name2'])!,
+      age: OtterInternal.decode(output['age'])!,
+      money: OtterInternal.decode(output['money'])!,
       list: OtterInternal.decodeList(output['list']),
       map: OtterInternal.decodeMap(output['map']),
-      example2: OtterInternal.decode(output['example2']),
+      example2: OtterInternal.decode(output['example2'])!,
       example2s: OtterInternal.decodeList(output['example2s']),
-      color: OtterInternal.decode(output['color']),
+      color: OtterInternal.decode(output['color'])!,
+      nullInt: OtterInternal.decode(output['nullInt']),
+      eenum: OtterInternal.decode(output['eenum'])!,
     );
   }
 
   @override
   Map<String, dynamic> encode(Example input) {
     return {
-      'name': OtterInternal.encode(input.name),
-      'age': OtterInternal.encode(input.age),
-      'money': OtterInternal.encode(input.money),
+      'name2': OtterInternal.encode(input.name)!,
+      'age': OtterInternal.encode(input.age)!,
+      'money': OtterInternal.encode(input.money)!,
       'list': OtterInternal.encodeList(input.list),
       'map': OtterInternal.encodeMap(input.map),
-      'example2': OtterInternal.encode(input.example2),
+      'example2': OtterInternal.encode(input.example2)!,
       'example2s': OtterInternal.encodeList(input.example2s),
-      'color': OtterInternal.encode(input.color),
+      'color': OtterInternal.encode(input.color)!,
+      'nullInt': OtterInternal.encode(input.nullInt),
+      'eenum': OtterInternal.encode(input.eenum)!,
     };
   }
 }
@@ -55,14 +60,46 @@ class AnotherExampleJsonSerializer implements JsonSerializer<AnotherExample, Map
   @override
   AnotherExample decode(Map<String, dynamic> output) {
     return AnotherExample(
-      name: OtterInternal.decode(output['name']),
+      name: OtterInternal.decode(output['name'])!,
     );
   }
 
   @override
   Map<String, dynamic> encode(AnotherExample input) {
     return {
-      'name': OtterInternal.encode(input.name),
+      'name': OtterInternal.encode(input.name)!,
     };
+  }
+}
+
+class ExampleEnumJsonSerializer implements JsonSerializer<ExampleEnum, String> {
+  final Map<ExampleEnum, String> _encoder = {
+    ExampleEnum.a1: 'A1',
+    ExampleEnum.a2: 'a2',
+    ExampleEnum.b1: 'b1',
+    ExampleEnum.b2: 'b2',
+  };
+
+  final Map<String, ExampleEnum> _decoder = {
+    'A1': ExampleEnum.a1,
+    'a2': ExampleEnum.a2,
+    'b1': ExampleEnum.b1,
+    'b2': ExampleEnum.b2,
+  };
+
+  @override
+  ExampleEnum decode(String output) {
+    if (!_decoder.containsKey(output)) {
+      throw ArgumentError("enum not found, enum=$output, class=ExampleEnumJsonSerializer");
+    }
+    return _decoder[output]!;
+  }
+
+  @override
+  String encode(ExampleEnum input) {
+    if (!_encoder.containsKey(input)) {
+      throw ArgumentError("enum not found, enum=input, class=ExampleEnumJsonSerializer");
+    }
+    return _encoder[input]!;
   }
 }

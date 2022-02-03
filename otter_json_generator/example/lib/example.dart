@@ -11,6 +11,7 @@ class ExampleImportJsonModule {}
 class ExampleJsonModule {}
 
 class Example implements Json {
+  @JsonField("name2")
   final String name;
   final int age;
   final double money;
@@ -19,6 +20,8 @@ class Example implements Json {
   final AnotherExample example2;
   final List<AnotherExample> example2s;
   final Color color;
+  final int? nullInt;
+  final ExampleEnum eenum;
 
   Example({
     required this.name,
@@ -29,7 +32,17 @@ class Example implements Json {
     required this.example2,
     required this.example2s,
     required this.color,
+    this.nullInt,
+    required this.eenum,
   });
+}
+
+enum ExampleEnum {
+  @JsonField("A1")
+  a1,
+  a2,
+  b1,
+  b2
 }
 
 class AnotherExample implements Json {
