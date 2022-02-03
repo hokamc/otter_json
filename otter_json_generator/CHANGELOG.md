@@ -21,3 +21,9 @@
 ### 2.0.1
 
 - validate custom serializers
+
+### 2.0.2
+
+- nullable field
+- custom field name
+- enum
