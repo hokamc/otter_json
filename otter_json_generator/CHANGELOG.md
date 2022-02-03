@@ -27,3 +27,7 @@
 - nullable field
 - custom field name
 - enum
+
+### 2.0.3
+
+- update otter_json
