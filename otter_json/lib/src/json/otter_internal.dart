@@ -11,16 +11,22 @@ class OtterInternal {
     _serializers.addAll(module.serializers());
   }
 
-  static O encode<I, O>(I object) {
-    var serializer = _serializers[I.toString()];
+  static O? encode<I, O>(I object) {
+    if (object == null) {
+      return null;
+    }
+    var serializer = _serializers[I.toString().replaceAll("?", "")];
     if (serializer == null) {
       throw ArgumentError.value('$I', 'cannot find serializer');
     }
     return serializer.encode(object);
   }
 
-  static I decode<I, O>(O source) {
-    var serializer = _serializers[I.toString()];
+  static I? decode<I, O>(O source) {
+    if (source == null) {
+      return null;
+    }
+    var serializer = _serializers[I.toString().replaceAll("?", "")];
     if (serializer == null) {
       throw ArgumentError('$I cannot find serializer');
     }
@@ -28,18 +34,18 @@ class OtterInternal {
   }
 
   static List<O> encodeList<I, O>(List<I> objects) {
-    return objects.map((e) => encode<I, O>(e)).toList();
+    return objects.map((e) => encode<I, O>(e)!).toList().cast();
   }
 
   static List<I> decodeList<I, O>(List<O> sources) {
-    return sources.map((e) => decode<I, O>(e)).toList();
+    return sources.map((e) => decode<I, O>(e)!).toList().cast();
   }
 
   static Map<String, O> encodeMap<I, O>(Map<String, I> objects) {
-    return objects.map((key, value) => MapEntry(key, encode(value)));
+    return objects.map((key, value) => MapEntry(key, encode(value)!));
   }
 
   static Map<String, I> decodeMap<I, O>(Map<String, O> sources) {
-    return sources.map((key, value) => MapEntry(key, decode(value)));
+    return sources.map((key, value) => MapEntry(key, decode(value)!));
   }
 }

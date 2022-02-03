@@ -20,7 +20,7 @@ class Otter {
   }
 
   static T fromJson<T extends Json>(String json) {
-    return OtterInternal.decode(jsonDecode(json));
+    return OtterInternal.decode(jsonDecode(json))!;
   }
 
   static void importGeneratedModule(GeneratedJsonModule module) {
