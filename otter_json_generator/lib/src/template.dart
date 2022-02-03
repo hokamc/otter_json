@@ -41,10 +41,10 @@ String enumJsonSerializerTemplate(String name, String encoder, String decoder) {
 
 class ${name}JsonSerializer implements JsonSerializer<$name, String> {
   final Map<$name, String> _encoder = {
-$encoder};
+$encoder  };
   
   final Map<String, $name> _decoder = {
-$decoder};
+$decoder  };
  
 
   @override
