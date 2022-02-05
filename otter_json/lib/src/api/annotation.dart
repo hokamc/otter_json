@@ -3,7 +3,7 @@ abstract class Json {}
 
 // annotate field with other name or annotate enum with other value
 class JsonField {
-  final String name;
+  final dynamic name;
 
   const JsonField(this.name);
 }
