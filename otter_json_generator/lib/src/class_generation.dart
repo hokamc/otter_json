@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -9,9 +10,10 @@ import 'package:source_gen/source_gen.dart';
 class GeneratedJsonSerializerInfo {
   final String className;
   final String uri;
+  final bool enumIsInt;
   final List<GeneratedJsonSerializerFieldInfo> fields;
 
-  GeneratedJsonSerializerInfo(this.className, this.fields, this.uri);
+  GeneratedJsonSerializerInfo(this.className, this.fields, this.uri, {this.enumIsInt = false});
 
   @override
   String toString() {
@@ -45,7 +47,7 @@ List<GeneratedJsonSerializerInfo> generateJsonSerializerFieldInfo(Set<String> su
     }
 
     GeneratedJsonSerializerInfo info =
-        GeneratedJsonSerializerInfo(generatedJsonSerializer.displayName, [], generatedJsonSerializer.enclosingElement.source.uri.toString());
+    GeneratedJsonSerializerInfo(generatedJsonSerializer.displayName, [], generatedJsonSerializer.enclosingElement.source.uri.toString());
     final jsonFieldChecker = TypeChecker.fromRuntime(JsonField);
 
     for (final field in generatedJsonSerializer.fields) {
@@ -82,21 +84,43 @@ List<GeneratedJsonSerializerInfo> generateEnumSerializerFieldInfo(Set<ClassEleme
   List<GeneratedJsonSerializerInfo> infos = [];
 
   for (final enumSerializer in enumJsonSerializers) {
-    GeneratedJsonSerializerInfo info =
-        GeneratedJsonSerializerInfo(enumSerializer.displayName, [], enumSerializer.enclosingElement.source.uri.toString());
+    List<GeneratedJsonSerializerFieldInfo> fields = [];
     final jsonFieldChecker = TypeChecker.fromRuntime(JsonField);
 
-    for (final field in enumSerializer.fields) {
-      if (field.isEnumConstant) {
-        String outputKey = field.name;
-        if (jsonFieldChecker.hasAnnotationOf(field)) {
-          outputKey = jsonFieldChecker.firstAnnotationOf(field)!.getField("name")!.toStringValue()!;
-        }
-        info.fields.add(GeneratedJsonSerializerFieldInfo(FieldType.enumT, false, field.name, outputKey));
+    bool init = false;
+    bool enumIsInt = false;
+    for (var i = 0; i < enumSerializer.fields.length; i++) {
+      FieldElement field = enumSerializer.fields[i];
+      if (!field.isEnumConstant) {
+        continue;
       }
+      String outputKey = field.name;
+      if (jsonFieldChecker.hasAnnotationOf(field)) {
+        DartObject fieldValue = jsonFieldChecker.firstAnnotationOf(field)!.getField("name")!;
+
+        DartType fieldType = fieldValue.type!;
+        if (!fieldType.isDartCoreInt && !fieldType.isDartCoreString) {
+          throw ArgumentError("all enum json field must be int or string");
+        }
+        if (!init) {
+          enumIsInt = fieldType.isDartCoreInt;
+          init = true;
+        } else if (enumIsInt != fieldType.isDartCoreInt) {
+          throw ArgumentError("all enum json field must have same type of value");
+        }
+        if (enumIsInt) {
+          outputKey = fieldValue.toIntValue()!.toString();
+        } else {
+          outputKey = fieldValue.toStringValue()!;
+        }
+      } else if (enumIsInt) {
+        throw ArgumentError("all enum json field must have same type of value");
+      }
+      fields.add(GeneratedJsonSerializerFieldInfo(FieldType.enumT, false, field.name, outputKey));
     }
 
-    infos.add(info);
+    infos.add(
+        GeneratedJsonSerializerInfo(enumSerializer.displayName, fields, enumSerializer.enclosingElement.source.uri.toString(), enumIsInt: enumIsInt));
   }
   return infos;
 }
@@ -144,11 +168,16 @@ String generateEnumSerializer(GeneratedJsonSerializerInfo info) {
   var encode = StringBuffer();
 
   info.fields.forEach((field) {
-    encode.writeln("      ${info.className}.${field.inputName}: '${field.outputName}',");
-    decode.writeln("      '${field.outputName}': ${info.className}.${field.inputName},");
+    if (info.enumIsInt) {
+      encode.writeln("      ${info.className}.${field.inputName}: ${field.outputName},");
+      decode.writeln("      ${field.outputName}: ${info.className}.${field.inputName},");
+    } else {
+      encode.writeln("      ${info.className}.${field.inputName}: '${field.outputName}',");
+      decode.writeln("      '${field.outputName}': ${info.className}.${field.inputName},");
+    }
   });
 
-  return enumJsonSerializerTemplate(info.className, encode.toString(), decode.toString());
+  return enumJsonSerializerTemplate(info.className, encode.toString(), decode.toString(), info.enumIsInt ? 'int' : 'String');
 }
 
 Modules generateModules(Set<ClassElement> userJsonSerializers, List<GeneratedJsonSerializerInfo> serializerInfos) {
