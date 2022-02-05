@@ -31,3 +31,7 @@
 ### 2.0.2
 
 - fix fromMap
+
+### 2.0.3
+
+- allow int in enum value
