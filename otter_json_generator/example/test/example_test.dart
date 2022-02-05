@@ -21,7 +21,7 @@ void main() {
         eenum: ExampleEnum.a1,
       );
       expect(Otter.toJson(example),
-          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1"}');
+          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1","enum2":null}');
 
       expect(Otter.toMap(example), {
         'name2': 'name',
@@ -35,7 +35,8 @@ void main() {
           {'name': 'name'}
         ],
         'nullInt': null,
-        "eenum": 'A1'
+        "eenum": 'A1',
+        "enum2": null
       });
     });
 
@@ -43,7 +44,7 @@ void main() {
       expect(
           Otter.toJson(Otter.fromJson<Example>(
               '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1"}')),
-          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1"}');
+          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1","enum2":null}');
     });
 
     test('fromMap', () {
@@ -62,7 +63,15 @@ void main() {
             'nullInt': null,
             "eenum": 'A1'
           })),
-          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1"}');
+          '{"name2":"name","age":1,"money":99.0,"list":[1,2],"map":{"abc":10},"example2":{"name":"name"},"example2s":[{"name":"name"}],"color":4294967295,"nullInt":null,"eenum":"A1","enum2":null}');
+    });
+
+    test('enum with int', () {
+      expect(OtterInternal.decode<Example2Enum, int>(1), Example2Enum.a1);
+    });
+
+    test('enum with int but input string', () {
+      expect(() => OtterInternal.decode<Example2Enum, String>("1"), throwsA(const TypeMatcher<TypeError>()));
     });
 
     test('null for non-nullable field', () {

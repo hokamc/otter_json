@@ -18,6 +18,7 @@ class OtterGeneratedJsonModule implements GeneratedJsonModule {
       'Example': ExampleJsonSerializer(),
       'AnotherExample': AnotherExampleJsonSerializer(),
       'ExampleEnum': ExampleEnumJsonSerializer(),
+      'Example2Enum': Example2EnumJsonSerializer(),
     };
   }
 }
@@ -36,6 +37,7 @@ class ExampleJsonSerializer implements JsonSerializer<Example, Map<String, dynam
       color: OtterInternal.decode(output['color'])!,
       nullInt: OtterInternal.decode(output['nullInt']),
       eenum: OtterInternal.decode(output['eenum'])!,
+      enum2: OtterInternal.decode(output['enum2']),
     );
   }
 
@@ -52,6 +54,7 @@ class ExampleJsonSerializer implements JsonSerializer<Example, Map<String, dynam
       'color': OtterInternal.encode(input.color)!,
       'nullInt': OtterInternal.encode(input.nullInt),
       'eenum': OtterInternal.encode(input.eenum)!,
+      'enum2': OtterInternal.encode(input.enum2),
     };
   }
 }
@@ -98,9 +101,40 @@ class ExampleEnumJsonSerializer implements JsonSerializer<ExampleEnum, String> {
   @override
   String encode(ExampleEnum input) {
     if (!_encoder.containsKey(input)) {
-      throw ArgumentError("enum not found, enum=input, class=ExampleEnumJsonSerializer");
+      throw ArgumentError("enum not found, enum=$input, class=ExampleEnumJsonSerializer");
     }
     return _encoder[input]!;
   }
 }
 
+class Example2EnumJsonSerializer implements JsonSerializer<Example2Enum, int> {
+  final Map<Example2Enum, int> _encoder = {
+    Example2Enum.a1: 1,
+    Example2Enum.a2: 2,
+    Example2Enum.b1: 3,
+    Example2Enum.b2: 4,
+  };
+
+  final Map<int, Example2Enum> _decoder = {
+    1: Example2Enum.a1,
+    2: Example2Enum.a2,
+    3: Example2Enum.b1,
+    4: Example2Enum.b2,
+  };
+
+  @override
+  Example2Enum decode(int output) {
+    if (!_decoder.containsKey(output)) {
+      throw ArgumentError("enum not found, enum=$output, class=Example2EnumJsonSerializer");
+    }
+    return _decoder[output]!;
+  }
+
+  @override
+  int encode(Example2Enum input) {
+    if (!_encoder.containsKey(input)) {
+      throw ArgumentError("enum not found, enum=$input, class=Example2EnumJsonSerializer");
+    }
+    return _encoder[input]!;
+  }
+}

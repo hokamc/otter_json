@@ -22,6 +22,7 @@ class Example implements Json {
   final Color color;
   final int? nullInt;
   final ExampleEnum eenum;
+  final Example2Enum? enum2;
 
   Example({
     required this.name,
@@ -34,6 +35,7 @@ class Example implements Json {
     required this.color,
     this.nullInt,
     required this.eenum,
+    this.enum2,
   });
 }
 
@@ -42,6 +44,17 @@ enum ExampleEnum {
   a1,
   a2,
   b1,
+  b2
+}
+
+enum Example2Enum {
+  @JsonField(1)
+  a1,
+  @JsonField(2)
+  a2,
+  @JsonField(3)
+  b1,
+  @JsonField(4)
   b2
 }
 

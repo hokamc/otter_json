@@ -297,14 +297,14 @@ packages:
       name: otter_json
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   otter_json_generator:
     dependency: "direct dev"
     description:
       name: otter_json_generator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.3"
+    version: "2.0.4"
   package_config:
     dependency: transitive
     description:
