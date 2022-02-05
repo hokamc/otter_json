@@ -31,3 +31,7 @@
 ### 2.0.3
 
 - update otter_json
+
+### 2.0.4
+
+- support int enum value
